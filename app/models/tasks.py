@@ -11,4 +11,4 @@ class TasksModel(db.Model):
     duration = Column(Integer)
     importance = Column(Integer)
     urgency = Column(Integer)
-    eisenhower = Column(Integer, ForeignKey("estados.id"), nullable=False)
+    eisenhower = Column(Integer, ForeignKey("eisenhower.id"), nullable=False)
