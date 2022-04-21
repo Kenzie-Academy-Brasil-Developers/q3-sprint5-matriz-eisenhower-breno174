@@ -1,5 +1,7 @@
+from app.models.task_categores import task_categories
 from app.configs.database import db
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class TasksModel(db.Model):
@@ -11,4 +13,6 @@ class TasksModel(db.Model):
     duration = Column(Integer)
     importance = Column(Integer)
     urgency = Column(Integer)
-    eisenhower = Column(Integer, ForeignKey("eisenhower.id"), nullable=False)
+    eisenhower_id = Column(Integer, ForeignKey("eisenhower.id"), nullable=False)
+
+    categories = relationship("CategoriesModel", secondary=task_categories, backref="tasks")
