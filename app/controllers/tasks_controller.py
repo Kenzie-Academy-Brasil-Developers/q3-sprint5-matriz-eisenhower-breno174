@@ -34,7 +34,7 @@ def create_task():
 
     serilized_categories = [categorie.name for categorie in new_task.categories]
     serialaized = {
-        # "id": "",
+        "id": new_task.id,
         "name": new_task.name,
         "description": new_task.description,
         "duration": new_task.duration,
