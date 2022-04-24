@@ -32,3 +32,14 @@ def check_categories(payload):
     for name in data_categories:
         if type(name) != str:
             raise TypeError
+
+
+def serialized_task(payload: TasksModel):
+    response = {
+        "id": payload.id,
+        "name": payload.name,
+        "description": payload.description,
+        "duration": payload.duration,
+        "classifcation": payload.eisenhower.type
+    }
+    return response

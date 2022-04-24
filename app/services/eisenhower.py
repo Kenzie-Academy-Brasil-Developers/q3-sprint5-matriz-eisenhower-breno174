@@ -1,3 +1,6 @@
+from app.models.tasks import TasksModel
+
+
 def defining_eisenhower(payload):
     importance = payload['importance']
     urgency = payload['urgency']

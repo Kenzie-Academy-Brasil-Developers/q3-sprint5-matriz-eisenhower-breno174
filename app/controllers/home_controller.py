@@ -1,9 +1,11 @@
 from http import HTTPStatus
 from flask import jsonify
 from sqlalchemy.orm.session import Session
+from ipdb import set_trace
 from app.configs.database import db
 from app.models.categories import CategoriesModel
 from app.models.eisenhower import EisenhowerModel
+from app.services.tasks_service import serialized_task
 
 
 def get_home():
@@ -12,10 +14,18 @@ def get_home():
     if all_categories == []:
         return {"message": "whitout content"}, HTTPStatus.NO_CONTENT
 
-    response = [categorie.__dict__ for categorie in all_categories]
-    seriealized = [seri.pop('_sa_instance_state') for seri in response]
+    serialized = []
+    for categorie in all_categories:
+        task = [serialized_task(task) for task in categorie.tasks]
+        categorie = {
+            "id": categorie.id,
+            "name": categorie.name,
+            "description": categorie.description,
+            "tasks": task
+        }
+        serialized.append(categorie)
 
-    return jsonify(response), 200
+    return jsonify(serialized), 200
 
 
 def initial_populate():
