@@ -61,6 +61,9 @@ def check_keys():
         data['name']
     except:
         raise MandatoryKeyMissing
-    if type(data['name']) != str or type(data['description']) != str:
+    if type(data['name']) != str:
         raise KeysTypeError
+    if "description" in list(data.keys()):
+        if type(data['description']) != str:
+            raise KeysTypeError
     check_categories(data)

@@ -71,7 +71,7 @@ def create_task():
         "categories": serilized_categories
     }
 
-    return jsonify(serialaized), 201
+    return jsonify(serialaized), HTTPStatus.CREATED
 
 
 def patch_task(id):
