@@ -1,27 +1,34 @@
 from app.models.categories import CategoriesModel
 from app.models.tasks import TasksModel
+from app.configs.database import db
+from sqlalchemy.orm import Session
+from ipdb import set_trace
 
 
-# TODO: fazer a criação das categorias que ainda não existem e separas das que já existem
-# verificar se existe erro ao tentar criar uma categoria já existente ou se duplicara a categoria
-# obs: nao pode duplicar categoria, então fazer verificação
+def register_task(payload):
+    session: Session = db.session
+    data_categories = payload.pop('categories')
+    all_categories = session.query(CategoriesModel).all()
+    
+    names = [categ.name for categ in all_categories]
+    new_task = TasksModel(**payload)
+
+    not_record = [name for name in data_categories if name not in names]
+    for record in not_record:
+        new_categ = CategoriesModel(name=record)
+        session.add(new_categ)
+        session.commit()
+
+    for x in data_categories:
+        new_task.categories.append(session.query(CategoriesModel).filter_by(name = x).first())
+
+    session.add(new_task)
+    session.commit()
+    return new_task
+
 
 def check_categories(payload):
-    data_categories = payload.pop('categories')
-
-    new_task = TasksModel(**payload)
-    # print(new_task.categories)
-
-    for categ in data_categories:
-        # new_categ = CategoriesModel(name=categ)
-        # new_task.categories.append(new_categ)
-        
-        # ERROR!!!
-        # TODO: corrigir conceito se categoria deve ter elementos string ou 
-        # do tipo CategoriesModel pelo Backref
-        # new_task.categories.append(categ)
-        ...
-
-    # print(new_task.categories)
-    
-    return new_task
+    data_categories = payload['categories']
+    for name in data_categories:
+        if type(name) != str:
+            raise TypeError

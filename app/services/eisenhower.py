@@ -11,3 +11,4 @@ def defining_eisenhower(payload):
         return "Schedule It"
     if importance == 2 and urgency == 2:
         return "Delete It"
+    return "Delete It"
