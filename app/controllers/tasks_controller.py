@@ -8,7 +8,7 @@ from app.models.eisenhower import EisenhowerModel
 from app.models.tasks import TasksModel
 from app.models.tasks import TasksModel
 from app.services.eisenhower import defining_eisenhower, patch_eisenhower
-from app.services.exceptions import KeysNotAccepted, KeysTypeError, MandatoryKeyMissing
+from app.services.exceptions import KeysNotAccepted, KeysTypeError, MandatoryKeyMissing, ScopeError
 from app.services.tasks_service import check_categories, check_keys as keys_tasks, register_task
 from flask import jsonify, request
 from sqlalchemy.exc import IntegrityError
@@ -84,6 +84,12 @@ def patch_task(id):
         patch_eisenhower(task)
     except AttributeError:
         return {"msg": "importance or urgency types must be string"}, HTTPStatus.BAD_REQUEST
+    except ScopeError:
+        return {"valid_options": {
+                "importance": [1, 2],
+                "urgency": [1, 2]
+                }
+            }, HTTPStatus.BAD_REQUEST
 
     for key, value in data.items():
         setattr(task, key, value)

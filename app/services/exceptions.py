@@ -6,3 +6,6 @@ class KeysTypeError(Exception):
 
 class MandatoryKeyMissing(Exception):
     ...
+
+class ScopeError(Exception):
+    ...

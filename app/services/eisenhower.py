@@ -1,5 +1,6 @@
 from flask import request
 from app.models.tasks import TasksModel
+from app.services.exceptions import ScopeError
 
 
 def defining_eisenhower(payload):
@@ -20,12 +21,10 @@ def defining_eisenhower(payload):
 def patch_eisenhower(payload: TasksModel):
     data = request.get_json()
     try:
-        importance = data['importance']
         payload.importance = data['importance']
     except:
         pass
     try:
-        urgency = data['urgency']
         payload.urgency = data['urgency']
     except:
         pass
@@ -33,6 +32,11 @@ def patch_eisenhower(payload: TasksModel):
         raise AttributeError
     if type(payload.urgency) != int:
         raise AttributeError
+
+    if payload.importance > 2 or payload.importance < 1:
+        raise ScopeError
+    if payload.urgency > 2 or payload.urgency < 1:
+        raise ScopeError
 
     if payload.importance == 1 and payload.urgency == 1:
         payload.eisenhower.type = "Dot It First"
