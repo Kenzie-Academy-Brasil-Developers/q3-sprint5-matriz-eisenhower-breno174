@@ -7,7 +7,7 @@ from app.models.categories import CategoriesModel
 from app.models.eisenhower import EisenhowerModel
 from app.models.tasks import TasksModel
 from app.models.tasks import TasksModel
-from app.services.eisenhower import defining_eisenhower
+from app.services.eisenhower import defining_eisenhower, patch_eisenhower
 from app.services.exceptions import KeysNotAccepted, KeysTypeError, MandatoryKeyMissing
 from app.services.tasks_service import check_categories, check_keys as keys_tasks, register_task
 from flask import jsonify, request
@@ -77,29 +77,37 @@ def create_task():
 def patch_task(id):
     data = request.get_json()
     session: Session = db.session
-    task = session.query(TasksModel).filter(TasksModel.id == id).first()
-    
+    task: TasksModel = session.query(TasksModel).filter(TasksModel.id == id).first()
     if not task:
-        return {"error": "id not found"}, HTTPStatus.NOT_FOUND
+        return {"error": "task not found"}, HTTPStatus.NOT_FOUND
+    try:
+        patch_eisenhower(task)
+    except AttributeError:
+        return {"msg": "importance or urgency types must be string"}, HTTPStatus.BAD_REQUEST
 
     for key, value in data.items():
         setattr(task, key, value)
-    serilized = {
+    serilized_categories = [categorie.name for categorie in task.categories]
+
+    serialized = {
         "id": task.id,
         "name": task.name,
-        "description": task.description
+        "description": task.description,
+        "duration": task.duration,
+        "classification": task.eisenhower.type,
+        "categories": serilized_categories
     }
 
     session.commit()
 
-    return jsonify(serilized), HTTPStatus.OK
+    return jsonify(serialized), HTTPStatus.OK
 
 
 def delete_task(id):
     session: Session = db.session
     task = session.query(TasksModel).get(id)
     if not task:
-        return {"error": "id not found"}, HTTPStatus.NOT_FOUND
+        return {"error": "task not found"}, HTTPStatus.NOT_FOUND
 
     session.delete(task)
     session.commit()

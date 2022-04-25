@@ -1,3 +1,4 @@
+from flask import request
 from app.models.tasks import TasksModel
 
 
@@ -14,3 +15,30 @@ def defining_eisenhower(payload):
         return "Schedule It"
     if importance == 2 and urgency == 2:
         return "Delete It"
+
+
+def patch_eisenhower(payload: TasksModel):
+    data = request.get_json()
+    try:
+        importance = data['importance']
+        payload.importance = data['importance']
+    except:
+        pass
+    try:
+        urgency = data['urgency']
+        payload.urgency = data['urgency']
+    except:
+        pass
+    if type(payload.importance) != int:
+        raise AttributeError
+    if type(payload.urgency) != int:
+        raise AttributeError
+
+    if payload.importance == 1 and payload.urgency == 1:
+        payload.eisenhower.type = "Dot It First"
+    if payload.importance == 1 and payload.urgency == 2:
+        payload.eisenhower.type = "Delegate It"
+    if payload.importance == 2 and payload.urgency == 1:
+        payload.eisenhower.type = "Schedule It"
+    if payload.importance == 2 and payload.urgency == 2:
+        payload.eisenhower.type = "Delete It"

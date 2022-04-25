@@ -49,7 +49,7 @@ def patch_categorie(id):
     categorie = session.query(CategoriesModel).filter(CategoriesModel.id == id).first()
     
     if not categorie:
-        return {"error": "id not found"}, HTTPStatus.NOT_FOUND
+        return {"error": "categorie not found"}, HTTPStatus.NOT_FOUND
 
     for key, value in data.items():
         setattr(categorie, key, value)
@@ -68,7 +68,7 @@ def delete_categorie(id):
     session: Session = db.session
     categorie = session.query(CategoriesModel).get(id)
     if not categorie:
-        return {"error": "id not found"}, HTTPStatus.NOT_FOUND
+        return {"error": "categorie not found"}, HTTPStatus.NOT_FOUND
 
     session.delete(categorie)
     session.commit()
