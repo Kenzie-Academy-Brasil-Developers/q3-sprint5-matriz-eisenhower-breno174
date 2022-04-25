@@ -9,7 +9,7 @@ from app.models.tasks import TasksModel
 from app.models.tasks import TasksModel
 from app.services.eisenhower import defining_eisenhower
 from app.services.exceptions import KeysNotAccepted, KeysTypeError, MandatoryKeyMissing
-from app.services.tasks_service import check_categories, check_keys, register_task
+from app.services.tasks_service import check_categories, check_keys as keys_tasks, register_task
 from flask import jsonify, request
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Query, Session
@@ -20,7 +20,7 @@ def create_task():
     initial_populate()
     data = request.get_json()
     try:
-        check_keys()
+        keys_tasks()
         check_categories(data)
         eisenhower = defining_eisenhower(data)
     except TypeError:
